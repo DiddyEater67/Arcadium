@@ -1572,7 +1572,10 @@
                 </div>
                 <div class="settings-option" id="rainbowSpeedOption" style="display: none;">
                     <label for="visualizerRainbowSpeed">Rainbow Speed</label>
-                    <input type="range" id="visualizerRainbowSpeed" min="10" max="200" value="50" style="flex: 1; margin: 0 10px; accent-color: var(--accent-color);">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <input type="range" id="visualizerRainbowSpeed" min="10" max="200" value="50" style="flex: 1; margin: 0 10px; accent-color: var(--accent-color);">
+                        <button id="resetRainbowSpeedBtn" style="background: var(--accent-color); color: white; border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; font-size: 0.8em;">Default</button>
+                    </div>
                 </div>
                 <div class="settings-option">
                     <label for="visualizerIntensity">Intensity</label>
@@ -4533,6 +4536,15 @@ setTimeout(() => {
         rainbowSpeedSlider.addEventListener('input', () => {
             visualizerRainbowSpeed = parseInt(rainbowSpeedSlider.value);
             localStorage.setItem('gn_power_visualizer_rainbow_speed', visualizerRainbowSpeed);
+        });
+    }
+
+    const resetRainbowSpeedBtn = document.getElementById('resetRainbowSpeedBtn');
+    if (resetRainbowSpeedBtn && rainbowSpeedSlider) {
+        resetRainbowSpeedBtn.addEventListener('click', () => {
+            visualizerRainbowSpeed = 50;
+            rainbowSpeedSlider.value = 50;
+            localStorage.setItem('gn_power_visualizer_rainbow_speed', 50);
         });
     }
 
