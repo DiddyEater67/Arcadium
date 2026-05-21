@@ -1568,13 +1568,10 @@
                             <input type="checkbox" id="visualizerRainbowCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
                             <label for="visualizerRainbowCheckbox" style="font-size: 0.9em; cursor: pointer;">Rainbow</label>
                         </div>
-                    </div>
-                </div>
-                <div class="settings-option" id="rainbowSpeedOption" style="display: none;">
-                    <label for="visualizerRainbowSpeed">Rainbow Speed</label>
-                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                        <input type="range" id="visualizerRainbowSpeed" min="10" max="200" value="50" style="flex: 1; margin: 0 10px; accent-color: var(--accent-color);">
-                        <button id="resetRainbowSpeedBtn" style="background: var(--accent-color); color: white; border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; font-size: 0.8em;">Default</button>
+                        <div id="rainbowSpeedOption" style="display: none; align-items: center; gap: 5px; margin-left: 5px;">
+                            <input type="range" id="visualizerRainbowSpeed" min="10" max="200" value="50" style="width: 60px; cursor: pointer; accent-color: var(--accent-color);" title="Rainbow Speed">
+                            <button id="resetRainbowSpeedBtn" style="background: var(--accent-color); color: white; border: none; border-radius: 5px; padding: 2px 5px; cursor: pointer; font-size: 0.7em; white-space: nowrap;">Default</button>
+                        </div>
                     </div>
                 </div>
                 <div class="settings-option">
