@@ -1335,7 +1335,7 @@
                 <button class="settings-tab" data-tab="clock">Clock</button>
                 <button class="settings-tab" data-tab="visualizer">Visualizer</button>
                 <button class="settings-tab" data-tab="particles">Particles</button>
-                <button class="settings-tab" data-tab="miniplayer">Mini Player</button>
+                <button class="settings-tab" data-tab="miniplayer" style="font-size: 0.85em; white-space: nowrap;">Mini Player</button>
             </div>
 
             <div id="mainTab" class="tab-content active">
@@ -1585,9 +1585,9 @@
                     <label for="miniPlayerToggle">Show Mini Player</label>
                     <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                         <div class="toggle-switch" id="miniPlayerToggle"></div>
-                        <input type="text" id="miniPlayerKeybind" placeholder="Key" readonly style="width: 50px; text-align: center; background: var(--input-bg); color: var(--input-text); border: 1px solid var(--border-color); border-radius: 5px; padding: 3px 6px; font-size: 0.85em; cursor: pointer;">
-                        <button id="applyMiniKeybindBtn" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Apply</button>
-                        <button id="clearMiniKeybindBtn" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Clear</button>
+                        <input type="text" id="miniPlayerKeybind" placeholder="Key" readonly style="width: 60px; height: 28px; text-align: center; background: var(--input-bg); color: var(--input-text); border: 1px solid var(--border-color); border-radius: 5px; padding: 0 6px; font-size: 0.85em; cursor: pointer; box-sizing: border-box;">
+                        <button id="applyMiniKeybindBtn" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; height: 28px; padding: 0 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Apply</button>
+                        <button id="clearMiniKeybindBtn" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; height: 28px; padding: 0 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Clear</button>
                     </div>
                 </div>
                 <div class="settings-option">
