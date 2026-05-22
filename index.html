@@ -1715,6 +1715,12 @@
         <div class="container">
             <div class="games-container" style="position: relative;">
                 <button id="prevGameBtn" class="game-nav-arrow">❮</button>
+                <div style="position: absolute; top: 18px; left: 100px;">
+                    <select id="gameListDropdown" style="background: var(--container-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 14px; font-size: 1em; cursor: pointer; outline: none;">
+                        <option value="turbowarp">Turbowarp Games</option>
+                        <option value="javascript">Javascript Games</option>
+                    </select>
+                </div>
                 <button id="nextGameBtn" class="game-nav-arrow">❯</button>
                 <h1><strong>Games Section</strong></h1>
                 <p>Enjoy these featured games!</p>
@@ -3865,7 +3871,7 @@
         const prevGameBtn = document.getElementById('prevGameBtn');
         const nextGameBtn = document.getElementById('nextGameBtn');
 
-        const gamesList = [
+        const jsGamesList = [
             {
                 title: "Flappy Dot",
                 type: "iframe",
@@ -3880,6 +3886,9 @@
                 credits: "<p>Game by DiddyEater67</p>",
                 controls: `<p>Up arrow to jump</p>`
             },
+        ];
+
+        const twGamesList = [
             {
                 title: "Paper Minecraft v11.7",
                 type: "iframe",
@@ -3998,17 +4007,25 @@
         ];
 
         let currentGameIndex = 0;
+        let activeGamesList = twGamesList;
+
+        const gameListDropdown = document.getElementById('gameListDropdown');
+        gameListDropdown.addEventListener('change', () => {
+            activeGamesList = gameListDropdown.value === 'javascript' ? jsGamesList : twGamesList;
+            currentGameIndex = 0;
+            updateGame();
+        });
 
         function updateGame() {
-            const game = gamesList[currentGameIndex];
+            const game = activeGamesList[currentGameIndex];
             gameTitle.textContent = game.title;
             gameControlsContent.innerHTML = game.controls;
             gameCreditsContent.innerHTML = game.credits;
             gameIframe.src = game.url;
         }
 
-        prevGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex - 1 + gamesList.length) % gamesList.length; updateGame(); });
-        nextGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex + 1) % gamesList.length; updateGame(); });
+        prevGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex - 1 + activeGamesList.length) % activeGamesList.length; updateGame(); });
+        nextGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex + 1) % activeGamesList.length; updateGame(); });
         updateGame();
 
         
