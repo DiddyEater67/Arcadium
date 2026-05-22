@@ -1734,6 +1734,7 @@
                         <div class="game-frame-wrapper">
                             <iframe id="gameIframe" class="game-frame" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen></iframe>
                         </div>
+                        <button id="gameFullscreenBtn" style="display: none; margin-top: 8px; background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">⛶ Fullscreen</button>
                     </div>
                     <div class="side-box" style="text-align: center;">
                         <h3 style="margin-top: 0; color: var(--accent-color);">Credits</h3>
@@ -4016,12 +4017,20 @@
             updateGame();
         });
 
+        const gameFullscreenBtn = document.getElementById('gameFullscreenBtn');
+
+        gameFullscreenBtn.addEventListener('click', () => {
+            if (gameIframe.requestFullscreen) gameIframe.requestFullscreen();
+            else if (gameIframe.webkitRequestFullscreen) gameIframe.webkitRequestFullscreen();
+        });
+
         function updateGame() {
             const game = activeGamesList[currentGameIndex];
             gameTitle.textContent = game.title;
             gameControlsContent.innerHTML = game.controls;
             gameCreditsContent.innerHTML = game.credits;
             gameIframe.src = game.url;
+            gameFullscreenBtn.style.display = (activeGamesList === jsGamesList) ? 'inline-block' : 'none';
         }
 
         prevGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex - 1 + activeGamesList.length) % activeGamesList.length; updateGame(); });
