@@ -1778,7 +1778,6 @@
                         <button id="heartTool">❤️ Heart</button>
 
                         <button id="arrowTool">➔ Arrow</button>
-                        <button id="crescentTool">🌙 Crescent</button>
                     </div>
                 </div>
             </div>
@@ -4172,7 +4171,6 @@
             { id: 'heartTool', name: 'Heart', tool: 'heart' },
 
             { id: 'arrowTool', name: 'Arrow', tool: 'arrow' },
-            { id: 'crescentTool', name: 'Crescent', tool: 'crescent' }
         ];
 
         tools.forEach(t => {
@@ -4241,7 +4239,7 @@
                 floodFill(Math.floor(x), Math.floor(y), drawColor.value); saveHistory();
             } else if (currentTool === 'text') {
                 startTextEntry(x, y);
-            } else if (['circle', 'square', 'rect', 'tri', 'star', 'heart', 'arrow', 'crescent'].includes(currentTool)) {
+            } else if (['circle', 'square', 'rect', 'tri', 'star', 'heart', 'arrow'].includes(currentTool)) {
                 startShapeEntry(x, y);
             } else {
                 startDrawing(e);
@@ -4417,42 +4415,6 @@
                 ctx.lineTo(0, size / 4);
                 ctx.lineTo(-size / 2, size / 4);
                 ctx.closePath();
-            } else if (s.type === 'crescent') {
-                const r = size / 2;
-                const ox = r * 0.38;
-                const ir = r * 0.78;
-                ctx.restore();
-                ctx.save();
-                ctx.translate(s.x, s.y);
-                ctx.rotate((s.rotation * Math.PI) / 180);
-                if (s.filled) {
-                    ctx.beginPath();
-                    ctx.arc(0, 0, r, 0, Math.PI * 2, false);
-                    ctx.arc(ox, 0, ir, 0, Math.PI * 2, false);
-                    ctx.fillStyle = s.color;
-                    ctx.fill('evenodd');
-                } else {
-                    // Offscreen canvas: stroke outer circle, erase inner circle, stamp result
-                    const pad = s.outlineSize + 2;
-                    const offSize = (r + pad) * 2;
-                    const off = document.createElement('canvas');
-                    off.width = offSize;
-                    off.height = offSize;
-                    const offCtx = off.getContext('2d');
-                    offCtx.translate(offSize / 2, offSize / 2);
-                    offCtx.beginPath();
-                    offCtx.arc(0, 0, r, 0, Math.PI * 2);
-                    offCtx.strokeStyle = s.color;
-                    offCtx.lineWidth = s.outlineSize;
-                    offCtx.stroke();
-                    offCtx.globalCompositeOperation = 'destination-out';
-                    offCtx.beginPath();
-                    offCtx.arc(ox, 0, ir, 0, Math.PI * 2);
-                    offCtx.fill();
-                    ctx.drawImage(off, -offSize / 2, -offSize / 2);
-                }
-                ctx.restore();
-                return;
             }
 
             if (s.filled) {
@@ -4521,9 +4483,8 @@
                         offsetY = h * 0.75;
                     } else if (activeShape.type === 'star') {
                         bW = sSize * 0.95; bH = sSize * 0.9;
-                    } else if (activeShape.type === 'crescent') {
-                        bW = sSize; bH = sSize;
                     }
+
                     const boxSizeW = bW + 4, boxSizeH = bH + 4;
                     drawCtx.strokeRect(-bW / 2 - 2, -bH / 2 - 2 + offsetY, boxSizeW, boxSizeH);
                     drawCtx.setLineDash([]);
@@ -4539,7 +4500,7 @@
         shapeSize.addEventListener('input', () => { if(activeShape) renderCanvasWithPreview(); });
         shapeFilled.addEventListener('change', () => { 
             if(activeShape) renderCanvasWithPreview();
-            else if(['circle', 'square', 'rect', 'tri', 'star', 'heart', 'arrow', 'crescent'].includes(currentTool)) outlineSizeGroup.style.display = shapeFilled.checked ? 'none' : 'flex';
+            else if(['circle', 'square', 'rect', 'tri', 'star', 'heart', 'arrow'].includes(currentTool)) outlineSizeGroup.style.display = shapeFilled.checked ? 'none' : 'flex';
         });
         outlineSize.addEventListener('input', () => { if(activeShape) renderCanvasWithPreview(); });
         textRotation.addEventListener('change', () => { if(activeText || activeShape) renderCanvasWithPreview(); });
