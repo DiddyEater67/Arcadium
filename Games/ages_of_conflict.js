@@ -782,14 +782,10 @@ function renderReadyPanel(){
   drawSlider(px+pw*0.1,py+ph*0.25,pw*0.8,setupNations,0,30,'setupNations');
   ctx.fillText(`Random cities: ${setupCities}`,cx2,py+ph*0.32);
   drawSlider(px+pw*0.1,py+ph*0.35,pw*0.8,setupCities,0,100,'setupCities');
-  ctx.fillText(`Kingdom threshold: ${kingdomThreshold}`,cx2,py+ph*0.42);
-  drawSlider(px+pw*0.1,py+ph*0.45,pw*0.8,kingdomThreshold,100,3000,'kingdomThreshold');
-  ctx.fillText(`Empire threshold: ${empireThreshold}`,cx2,py+ph*0.52);
-  drawSlider(px+pw*0.1,py+ph*0.55,pw*0.8,empireThreshold,500,6000,'empireThreshold');
   // Checkboxes
   drawCheckbox(px+pw*0.12,py+ph*0.65,allowRevolts,'Allow revolts',fs);
   drawCheckbox(px+pw*0.12,py+ph*0.72,allowAlliances,'Allow alliances',fs);
-  ctx.fillStyle='#bbb'; ctx.font=`${fs*0.9}px 'Courier New'`;
+  ctx.fillStyle='#bbb'; ctx.font=`${fs*0.9}px 'Courier New'`; ctx.textAlign='center';
   ctx.fillText('Spawn random entities and begin?',cx2,py+ph*0.82);
   drawBtn(px+pw*0.2,py+ph*0.88,pw*0.6,ph*0.08,'Ready!','#1a6e1a','#fff',true);
 }
