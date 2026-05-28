@@ -3876,20 +3876,49 @@
             {
                 title: "Flappy Dot",
                 type: "iframe",
-                url: "data:text/html;charset=utf-8,<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><script src='https://cdn.jsdelivr.net/gh/DiddyEater67/GN-Tel_Aviv@1b587bc644bfacd03960e6c755515ccb3cd6075e/Games/Flappy_Dot.js'><\/script></body></html>",
+                url: "https://cdn.jsdelivr.net/gh/DiddyEater67/GN-Tel_Aviv@1b587bc644bfacd03960e6c755515ccb3cd6075e/Games/Flappy_Dot.js",
                 credits: "<p>Game by DiddyEater67</p>",
                 controls: `<p>Up arrow to fly</p>`
             },
             {
                 title: "Dino Block Game",
                 type: "iframe",
-                url: "data:text/html;charset=utf-8,<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><script src='https://cdn.jsdelivr.net/gh/DiddyEater67/GN-Tel_Aviv@1f3740da155080f23f0bf7f4740ba1d11a5b8440/Games/dino_block_game.js'><\/script></body></html>",
+                url: "https://cdn.jsdelivr.net/gh/DiddyEater67/GN-Tel_Aviv@1f3740da155080f23f0bf7f4740ba1d11a5b8440/Games/dino_block_game.js",
                 credits: "<p>Game by DiddyEater67</p>",
                 controls: `<p>Up arrow to jump</p>`
             },
+
         ];
 
         const twGamesList = [
+            {
+                title: "Five Nights at Freddy's",
+                type: "iframe",
+                url: "https://turbowarp.org/323425823/embed?addons=pause%2Cfullscreen&fps=30",
+                credits: "<p>Game by SwimmingGecko101</p><p>Ported by DiddyEater67</p>",
+                controls: `<p>Click to interact</p><p>Q on menu to turn on/off jumpscares</p>`
+            },
+            {
+                title: "Five Nights at Freddy's 2",
+                type: "iframe",
+                url: "https://turbowarp.org/509151492/embed?addons=pause%2Cfullscreen&fps=30",
+                credits: "<p>Game by DaveyBoyTheCodeKing</p><p>Ported by DiddyEater67</p>",
+                controls: `<p>Mouse to interact</p><p>Z to use flashlight</p>`
+            },
+            {
+                title: "Five Nights at Freddy's 3",
+                type: "iframe",
+                url: "https://turbowarp.org/710645963/embed?addons=pause%2Cfullscreen&fps=30",
+                credits: "<p>Game by Ultimate_Coder-</p><p>Ported by DiddyEater67</p><p><em>Note: Game is slightly unfinished</em></p>",
+                controls: `<p>Click to interact</p><p>Space to seal vents</p>`
+            },
+            {
+                title: "Five Nights at Freddy's 4",
+                type: "iframe",
+                url: "https://turbowarp.org/500148371/embed?addons=pause%2Cfullscreen&fps=30",
+                credits: "<p>Game by freddyfazfriend</p><p>Ported by DiddyEater67</p><p><em>Note: Game is fairly unfinished and buggy</em></p>",
+                controls: `<p>Click to use flashlight</p><p>Space to shut door</p>`
+            },
             {
                 title: "Paper Minecraft v11.7",
                 type: "iframe",
@@ -4029,8 +4058,15 @@
             gameTitle.textContent = game.title;
             gameControlsContent.innerHTML = game.controls;
             gameCreditsContent.innerHTML = game.credits;
-            gameIframe.src = game.url;
-            gameFullscreenBtn.style.display = (activeGamesList === jsGamesList) ? 'inline-block' : 'none';
+            if (activeGamesList === jsGamesList) {
+                gameIframe.removeAttribute('src');
+                gameIframe.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script src="' + game.url + '"><\/script></body></html>';
+                gameFullscreenBtn.style.display = 'inline-block';
+            } else {
+                gameIframe.removeAttribute('srcdoc');
+                gameIframe.src = game.url;
+                gameFullscreenBtn.style.display = 'none';
+            }
         }
 
         prevGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex - 1 + activeGamesList.length) % activeGamesList.length; updateGame(); });
