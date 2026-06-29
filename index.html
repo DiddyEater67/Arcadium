@@ -1102,6 +1102,14 @@
             justify-content: center;
         }
 
+        .volume-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            opacity: 0.85;
+        }
+        .volume-btn:hover { opacity: 1; }
+
         .volume-slider {
             width: 120px;
             cursor: pointer;
@@ -1842,15 +1850,14 @@
                     </div>
                 </div>
                 <div class="player-controls">
-                    <button class="player-btn" id="loopBtn" title="Toggle Loop"></button>
                     <button class="player-btn" id="shuffleBtn" title="Shuffle Tracks"></button>
                     <button class="player-btn" id="prevBtn" title="Previous Track"></button>
                     <button class="player-btn play-pause" id="playPauseBtn" title="Play/Pause"></button>
                     <button class="player-btn" id="nextBtn" title="Next Track"></button>
-                    <button class="player-btn" id="playerMuteBtn" title="Mute/Unmute"></button>
+                    <button class="player-btn" id="loopBtn" title="Toggle Loop"></button>
                 </div>
                 <div class="volume-container">
-                    <span id="playerVolLowIcon" style="display:flex; font-size:16px; color:var(--text-color); opacity:0.7;"></span>
+                    <button class="player-btn volume-btn" id="playerMuteBtn" title="Mute/Unmute"></button>
                     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
                     <span id="playerVolHighIcon" style="display:flex; font-size:16px; color:var(--text-color); opacity:0.7;"></span>
                 </div>
@@ -1900,15 +1907,14 @@
             <div class="mini-progress-fill" id="miniProgressFill"></div>
         </div>
         <div class="mini-controls">
-            <button class="mini-btn" id="miniLoopBtn" title="Toggle Loop"></button>
             <button class="mini-btn" id="miniShuffleBtn" title="Shuffle Tracks"></button>
             <button class="mini-btn" id="miniPrevBtn" title="Previous"></button>
             <button class="mini-btn" id="miniPlayPauseBtn" title="Play/Pause"></button>
             <button class="mini-btn" id="miniNextBtn" title="Next"></button>
-            <button class="mini-btn" id="miniMuteBtn" title="Mute/Unmute"></button>
+            <button class="mini-btn" id="miniLoopBtn" title="Toggle Loop"></button>
         </div>
         <div class="mini-volume-container">
-            <span id="miniVolLowIcon" style="font-size: 12px; display:flex; color:var(--text-color); opacity:0.7;"></span>
+            <button class="mini-btn" id="miniMuteBtn" title="Mute/Unmute" style="font-size: 12px;"></button>
             <input type="range" class="mini-volume-slider" id="miniVolumeSlider" min="0" max="1" step="0.01" value="0.5">
             <span id="miniVolHighIcon" style="font-size: 12px; display:flex; color:var(--text-color); opacity:0.7;"></span>
         </div>
@@ -3083,7 +3089,6 @@
         nextBtn.innerHTML = Icons.next;
         playPauseBtn.innerHTML = Icons.play;
         playerMuteBtn.innerHTML = Icons.volHigh;
-        document.getElementById('playerVolLowIcon').innerHTML = Icons.volLow;
         document.getElementById('playerVolHighIcon').innerHTML = Icons.volHigh;
         const progressFill = document.getElementById('progressFill');
         const currentTimeDisplay = document.getElementById('currentTime');
@@ -3273,9 +3278,7 @@
         if (miniPlayPauseBtn) miniPlayPauseBtn.innerHTML = Icons.play;
         if (miniNextBtn) miniNextBtn.innerHTML = Icons.next;
         if (miniMuteBtn) miniMuteBtn.innerHTML = Icons.volHigh;
-        const miniVolLowIcon = document.getElementById('miniVolLowIcon');
         const miniVolHighIcon = document.getElementById('miniVolHighIcon');
-        if (miniVolLowIcon) miniVolLowIcon.innerHTML = Icons.volLow;
         if (miniVolHighIcon) miniVolHighIcon.innerHTML = Icons.volHigh;
 
         if (miniLoopBtn) miniLoopBtn.addEventListener('click', () => { loopBtn.click(); updateMiniLoopUI(); });
