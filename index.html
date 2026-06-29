@@ -2919,7 +2919,7 @@
 
         function updateMaxParticles(val) {
             if (isNaN(val) || val < 1) val = 1;
-            if (val > 400) val = 400;
+            if (val > 800) val = 800;
             maxParticles = val;
             particleCountInput.value = val;
             localStorage.setItem('gn_maxParticles', maxParticles);
