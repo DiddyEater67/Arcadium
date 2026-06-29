@@ -1847,7 +1847,6 @@
                     <button class="player-btn" id="prevBtn" title="Previous Track"></button>
                     <button class="player-btn play-pause" id="playPauseBtn" title="Play/Pause"></button>
                     <button class="player-btn" id="nextBtn" title="Next Track"></button>
-                    <button class="player-btn" id="restartBtn" title="Restart Song"></button>
                     <button class="player-btn" id="playerMuteBtn" title="Mute/Unmute"></button>
                 </div>
                 <div class="volume-container">
@@ -1906,7 +1905,6 @@
             <button class="mini-btn" id="miniPrevBtn" title="Previous"></button>
             <button class="mini-btn" id="miniPlayPauseBtn" title="Play/Pause"></button>
             <button class="mini-btn" id="miniNextBtn" title="Next"></button>
-            <button class="mini-btn" id="miniRestartBtn" title="Restart"></button>
             <button class="mini-btn" id="miniMuteBtn" title="Mute/Unmute"></button>
         </div>
         <div class="mini-volume-container">
@@ -3171,7 +3169,17 @@
             } 
         });
         playPauseBtn.addEventListener('click', () => { if (playlist.length === 0) return; if (!musicStarted) startMusic(); else { if (bgMusic.paused) bgMusic.play(); else bgMusic.pause(); updatePlayPauseIcon(); } });
-        prevBtn.addEventListener('click', () => { if (playlist.length === 0) return; let next = (currentTrackIndex - 1 + playlist.length) % playlist.length; loadTrack(next); });
+        const PREV_RESTART_THRESHOLD = 3; // seconds — if further into the track than this, "Previous" restarts the current song instead of going back a track
+        prevBtn.addEventListener('click', () => {
+            if (playlist.length === 0) return;
+            if (bgMusic.currentTime > PREV_RESTART_THRESHOLD) {
+                bgMusic.currentTime = 0;
+                if (bgMusic.paused) { bgMusic.play().catch(() => {}); updatePlayPauseIcon(); }
+            } else {
+                let next = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+                loadTrack(next);
+            }
+        });
         nextBtn.addEventListener('click', () => { if (playlist.length === 0) return; let next = (currentTrackIndex + 1) % playlist.length; loadTrack(next); });
         loopBtn.addEventListener('click', () => { 
             isLooping = !isLooping; 
@@ -3210,15 +3218,6 @@
             showShuffleNotification();
             shuffleBtn.style.transform = 'scale(1.2)';
             setTimeout(() => { shuffleBtn.style.transform = 'scale(1)'; }, 200);
-        });
-        const restartBtn = document.getElementById('restartBtn');
-        restartBtn.innerHTML = Icons.restart;
-        restartBtn.addEventListener('click', () => {
-            bgMusic.currentTime = 0;
-            if (bgMusic.paused) {
-                bgMusic.play().catch(() => {});
-                updatePlayPauseIcon();
-            }
         });
         volumeSlider.addEventListener('input', (e) => { bgMusic.volume = e.target.value; playerMuteBtn.innerHTML = bgMusic.volume === 0 ? Icons.volMute : Icons.volHigh; });
         playerMuteBtn.addEventListener('click', () => { if (bgMusic.volume > 0) { bgMusic.dataset.lastVolume = bgMusic.volume; bgMusic.volume = 0; volumeSlider.value = 0; playerMuteBtn.innerHTML = Icons.volMute; } else { bgMusic.volume = bgMusic.dataset.lastVolume || 0.5; volumeSlider.value = bgMusic.volume; playerMuteBtn.innerHTML = Icons.volHigh; } });
@@ -3262,7 +3261,6 @@
         const miniPrevBtn = document.getElementById('miniPrevBtn');
         const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
         const miniNextBtn = document.getElementById('miniNextBtn');
-        const miniRestartBtn = document.getElementById('miniRestartBtn');
         const miniMuteBtn = document.getElementById('miniMuteBtn');
         const miniVolumeSlider = document.getElementById('miniVolumeSlider');
         const miniProgress = document.getElementById('miniProgress');
@@ -3274,7 +3272,6 @@
         if (miniPrevBtn) miniPrevBtn.innerHTML = Icons.prev;
         if (miniPlayPauseBtn) miniPlayPauseBtn.innerHTML = Icons.play;
         if (miniNextBtn) miniNextBtn.innerHTML = Icons.next;
-        if (miniRestartBtn) miniRestartBtn.innerHTML = Icons.restart;
         if (miniMuteBtn) miniMuteBtn.innerHTML = Icons.volHigh;
         const miniVolLowIcon = document.getElementById('miniVolLowIcon');
         const miniVolHighIcon = document.getElementById('miniVolHighIcon');
@@ -3311,7 +3308,6 @@
         if (miniPlayPauseBtn) miniPlayPauseBtn.addEventListener('click', () => playPauseBtn.click());
         if (miniPrevBtn) miniPrevBtn.addEventListener('click', () => prevBtn.click());
         if (miniNextBtn) miniNextBtn.addEventListener('click', () => nextBtn.click());
-        if (miniRestartBtn) miniRestartBtn.addEventListener('click', () => { restartBtn.click(); });
         if (miniMuteBtn) miniMuteBtn.addEventListener('click', () => { playerMuteBtn.click(); updateMiniVolumeUI(); });
         
         miniVolumeSlider.addEventListener('input', (e) => {
