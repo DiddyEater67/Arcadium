@@ -483,7 +483,53 @@
         .mini-btn { background: none; border: none; color: var(--text-color); cursor: pointer; font-size: 16px; padding: 5px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .mini-btn.active { color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color); }
         .mini-volume-container { display: flex; align-items: center; gap: 5px; width: 100%; justify-content: center; margin-top: 5px; }
-        .mini-volume-slider { width: 80px; height: 4px; cursor: pointer; accent-color: var(--accent-color); }
+        .mini-volume-slider { width: 80px; height: 12px; cursor: pointer; accent-color: var(--accent-hover); -webkit-appearance: none; appearance: none; }
+        .mini-volume-slider::-webkit-slider-runnable-track {
+            height: 12px;
+            border-radius: 2px;
+            background: rgba(255,255,255,1);
+            border: none;
+            box-shadow: none;
+            overflow: hidden;
+        }
+        .mini-volume-slider::-moz-range-track {
+            height: 12px;
+            border-radius: 2px;
+            background: rgba(255,255,255,1);
+            border: none;
+            box-shadow: none;
+            overflow: hidden;
+        }
+        .mini-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background: #084c69;
+            box-shadow: none;
+            margin-top: 0px;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .mini-volume-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background: #084c69;
+            border: none;
+            box-shadow: none;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .mini-volume-slider:hover::-webkit-slider-thumb,
+        .mini-volume-slider:active::-webkit-slider-thumb {
+            background: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
+        .mini-volume-slider:hover::-moz-range-thumb,
+        .mini-volume-slider:active::-moz-range-thumb {
+            background: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
         .mini-btn:hover { transform: scale(1.2); color: var(--accent-color); }
         .mini-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; cursor: pointer; position: relative; }
         .mini-progress-fill { height: 100%; background: var(--accent-color); width: 0%; border-radius: 2px; transition: width 0.1s linear; }
@@ -1113,7 +1159,48 @@
         .volume-slider {
             width: 120px;
             cursor: pointer;
-            accent-color: var(--accent-color);
+            accent-color: var(--accent-hover);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .volume-slider::-webkit-slider-runnable-track {
+            height: 14px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.2);
+        }
+        .volume-slider::-moz-range-track {
+            height: 14px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.2);
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            background: #084c69;
+            box-shadow: none;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            background: #084c69;
+            border: none;
+            box-shadow: none;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .volume-slider:hover::-webkit-slider-thumb,
+        .volume-slider:active::-webkit-slider-thumb {
+            background: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
+        }
+        .volume-slider:hover::-moz-range-thumb,
+        .volume-slider:active::-moz-range-thumb {
+            background: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
         }
 
         .playlist-info {
@@ -3276,6 +3363,9 @@
         if (miniNextBtn) miniNextBtn.innerHTML = Icons.next;
         if (miniMuteBtn) miniMuteBtn.innerHTML = Icons.volHigh;
 
+        // Sync mini volume slider to current volume on load
+        miniVolumeSlider.value = bgMusic.volume;
+
         if (miniLoopBtn) miniLoopBtn.addEventListener('click', () => { loopBtn.click(); updateMiniLoopUI(); });
         if (miniShuffleBtn) miniShuffleBtn.addEventListener('click', () => { shuffleBtn.click(); });
 
@@ -3287,6 +3377,10 @@
                 updateMiniPlayPauseIcon();
                 updateMiniLoopUI();
                 updateMiniVolumeUI();
+                // Force thumb re-render
+                const v = bgMusic.volume;
+                miniVolumeSlider.value = 0;
+                requestAnimationFrame(() => { miniVolumeSlider.value = v; });
             }
         });
 
