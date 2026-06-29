@@ -1859,7 +1859,6 @@
                 <div class="volume-container">
                     <button class="player-btn volume-btn" id="playerMuteBtn" title="Mute/Unmute"></button>
                     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-                    <span id="playerVolHighIcon" style="display:flex; font-size:16px; color:var(--text-color); opacity:0.7;"></span>
                 </div>
                 <div class="music-warning">⚠️ - Any MP3's uploaded will not be kept after site is left or reloaded.</div>
             </div>
@@ -1916,7 +1915,6 @@
         <div class="mini-volume-container">
             <button class="mini-btn" id="miniMuteBtn" title="Mute/Unmute" style="font-size: 12px;"></button>
             <input type="range" class="mini-volume-slider" id="miniVolumeSlider" min="0" max="1" step="0.01" value="0.5">
-            <span id="miniVolHighIcon" style="font-size: 12px; display:flex; color:var(--text-color); opacity:0.7;"></span>
         </div>
     </div>
     <audio id="bgMusic" crossorigin="anonymous"></audio>
@@ -3089,7 +3087,6 @@
         nextBtn.innerHTML = Icons.next;
         playPauseBtn.innerHTML = Icons.play;
         playerMuteBtn.innerHTML = Icons.volHigh;
-        document.getElementById('playerVolHighIcon').innerHTML = Icons.volHigh;
         const progressFill = document.getElementById('progressFill');
         const currentTimeDisplay = document.getElementById('currentTime');
         const durationDisplay = document.getElementById('duration');
@@ -3278,8 +3275,6 @@
         if (miniPlayPauseBtn) miniPlayPauseBtn.innerHTML = Icons.play;
         if (miniNextBtn) miniNextBtn.innerHTML = Icons.next;
         if (miniMuteBtn) miniMuteBtn.innerHTML = Icons.volHigh;
-        const miniVolHighIcon = document.getElementById('miniVolHighIcon');
-        if (miniVolHighIcon) miniVolHighIcon.innerHTML = Icons.volHigh;
 
         if (miniLoopBtn) miniLoopBtn.addEventListener('click', () => { loopBtn.click(); updateMiniLoopUI(); });
         if (miniShuffleBtn) miniShuffleBtn.addEventListener('click', () => { shuffleBtn.click(); });
