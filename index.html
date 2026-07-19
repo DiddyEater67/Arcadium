@@ -1814,6 +1814,7 @@
                     <select id="gameListDropdown" style="background: var(--container-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 14px; font-size: 1em; cursor: pointer; outline: none;">
                         <option value="turbowarp">Turbowarp Games</option>
                         <option value="javascript">Javascript Games</option>
+                        <option value="emulators">Emulators</option>
                     </select>
                 </div>
                 <button id="nextGameBtn" class="game-nav-arrow">❯</button>
@@ -4167,7 +4168,11 @@
 
         const gameListDropdown = document.getElementById('gameListDropdown');
         gameListDropdown.addEventListener('change', () => {
-            activeGamesList = gameListDropdown.value === 'javascript' ? jsGamesList : twGamesList;
+            if (gameListDropdown.value === 'emulators') {
+                activeGamesList = [];
+            } else {
+                activeGamesList = gameListDropdown.value === 'javascript' ? jsGamesList : twGamesList;
+            }
             currentGameIndex = 0;
             updateGame();
         });
@@ -4180,6 +4185,17 @@
         });
 
         function updateGame() {
+            if (gameListDropdown.value === 'emulators') {
+                gameTitle.textContent = '';
+                gameControlsContent.innerHTML = '';
+                gameCreditsContent.innerHTML = '';
+                gameIframe.removeAttribute('src');
+                gameIframe.removeAttribute('srcdoc');
+                gameIframe.style.display = 'none';
+                gameFullscreenBtn.style.display = 'none';
+                return;
+            }
+            gameIframe.style.display = '';
             const game = activeGamesList[currentGameIndex];
             gameTitle.textContent = game.title;
             gameControlsContent.innerHTML = game.controls;
@@ -4195,8 +4211,8 @@
             }
         }
 
-        prevGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex - 1 + activeGamesList.length) % activeGamesList.length; updateGame(); });
-        nextGameBtn.addEventListener('click', () => { currentGameIndex = (currentGameIndex + 1) % activeGamesList.length; updateGame(); });
+        prevGameBtn.addEventListener('click', () => { if (!activeGamesList.length) return; currentGameIndex = (currentGameIndex - 1 + activeGamesList.length) % activeGamesList.length; updateGame(); });
+        nextGameBtn.addEventListener('click', () => { if (!activeGamesList.length) return; currentGameIndex = (currentGameIndex + 1) % activeGamesList.length; updateGame(); });
         updateGame();
 
         
