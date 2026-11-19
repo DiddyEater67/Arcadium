@@ -1513,7 +1513,7 @@
                             <label for="rainbowModeCheckbox" style="font-size: 0.9em; cursor: pointer; white-space: nowrap;">Rainbow</label>
                         </div>
                         <div id="rainbowSpeedContainer" style="display: none; align-items: center; gap: 5px; margin-left: 5px;">
-                            <input type="range" id="rainbowSpeedSlider" min="0.1" max="5" step="0.1" value="0.5" style="width: 60px; cursor: pointer;" title="Rainbow Speed">
+                            <input type="range" id="rainbowSpeedSlider" min="10" max="200" step="1" value="50" style="width: 60px; cursor: pointer;" title="Rainbow Speed">
                             <button id="resetRainbowSpeed" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Default</button>
                         </div>
                         <input type="color" id="particleColorPickerSettings" value="#5dade2" style="width: 40px; height: 30px; padding: 0; border: none; background: none; cursor: pointer;">
@@ -1561,7 +1561,7 @@
                             <label for="rainbowClockCheckbox" style="font-size: 0.9em; cursor: pointer;">Rainbow</label>
                         </div>
                         <div id="clockRainbowSpeedOption" style="display: none; align-items: center; gap: 5px;">
-                            <input type="range" id="clockRainbowSpeedSlider" min="0.1" max="5" step="0.1" value="0.5" style="width: 80px; cursor: pointer;">
+                            <input type="range" id="clockRainbowSpeedSlider" min="10" max="200" step="1" value="50" style="width: 80px; cursor: pointer;">
                             <button id="defaultClockRainbowSpeedBtn" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Default</button>
                         </div>
                     </div>
@@ -2247,12 +2247,16 @@
         
         let clockRainbowActive = false;
         let clockRainbowHue = 0;
-        let clockRainbowSpeed = 0.5;
+        let clockRainbowSpeed = 50; // degrees of hue per second (same scale as visualizer: 10-200)
         let clockRainbowInterval = null;
+        let clockRainbowLastTime = 0;
 
-        function updateClockRainbow() {
+        function updateClockRainbow(now) {
             if (!clockRainbowActive) return;
-            clockRainbowHue = (clockRainbowHue + clockRainbowSpeed) % 360;
+            now = now || performance.now();
+            const dt = clockRainbowLastTime ? Math.min((now - clockRainbowLastTime) / 1000, 0.1) : 0;
+            clockRainbowLastTime = now;
+            clockRainbowHue = (clockRainbowHue + clockRainbowSpeed * dt) % 360;
             clock.style.color = `hsl(${clockRainbowHue}, 100%, 50%)`;
             clockRainbowInterval = requestAnimationFrame(updateClockRainbow);
         }
@@ -2269,6 +2273,7 @@
             clockRainbowSpeedOption.style.display = clockRainbowActive ? 'flex' : 'none';
             localStorage.setItem('gn_rainbowClock', clockRainbowActive);
             if (clockRainbowActive) {
+                clockRainbowLastTime = 0;
                 updateClockRainbow();
             } else {
                 cancelAnimationFrame(clockRainbowInterval);
@@ -2278,19 +2283,25 @@
 
         clockRainbowSpeedSlider.addEventListener('input', (e) => {
             clockRainbowSpeed = parseFloat(e.target.value);
-            localStorage.setItem('gn_rainbowSpeed', clockRainbowSpeed);
+            localStorage.setItem('gn_clockRainbowSpeed', clockRainbowSpeed);
         });
 
         defaultClockRainbowSpeedBtn.addEventListener('click', () => {
-            clockRainbowSpeed = 0.5;
-            clockRainbowSpeedSlider.value = 0.5;
-            localStorage.setItem('gn_rainbowSpeed', 0.5);
+            clockRainbowSpeed = 50;
+            clockRainbowSpeedSlider.value = 50;
+            localStorage.setItem('gn_clockRainbowSpeed', 50);
         });
 
         const savedClockColor = localStorage.getItem('gn_clockColor');
         if (savedClockColor) {
             clock.style.color = savedClockColor;
             clockColorPicker.value = savedClockColor;
+        }
+
+        const savedClockRainbowSpeed = localStorage.getItem('gn_clockRainbowSpeed');
+        if (savedClockRainbowSpeed) {
+            clockRainbowSpeed = parseFloat(savedClockRainbowSpeed);
+            clockRainbowSpeedSlider.value = clockRainbowSpeed;
         }
 
         const savedClockRainbowActive = localStorage.getItem('gn_rainbowClock') === 'true';
@@ -2301,11 +2312,6 @@
             updateClockRainbow();
         }
 
-        const savedClockRainbowSpeed = localStorage.getItem('gn_rainbowSpeed');
-        if (savedClockRainbowSpeed) {
-            clockRainbowSpeed = parseFloat(savedClockRainbowSpeed);
-            clockRainbowSpeedSlider.value = clockRainbowSpeed;
-        }
 
         // Military Time Toggle
         const militaryTimeToggle = document.getElementById('militaryTimeToggle');
@@ -2772,7 +2778,8 @@
         let particleSizeMultiplier = 1;
         let particleSpeedMultiplier = 1;
         let rainbowHue = 0;
-        let rainbowSpeed = 0.5;
+        let rainbowSpeed = 50; // degrees of hue per second (same scale as visualizer: 10-200)
+        let rainbowLastTime = 0;
         let selectedParticleColor = '#5dade2';
         let maxParticles = 100;
         let particleReactionState = 0; // 0: Push, 1: Pull, 2: Circle
@@ -2889,7 +2896,10 @@
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (particlesEnabled) { rainbowHue = (rainbowHue + rainbowSpeed) % 360; particles.forEach(p => { p.update(); p.draw(); }); }
+            const nowT = performance.now();
+            const rbDt = rainbowLastTime ? Math.min((nowT - rainbowLastTime) / 1000, 0.1) : 0;
+            rainbowLastTime = nowT;
+            if (particlesEnabled) { rainbowHue = (rainbowHue + rainbowSpeed * rbDt) % 360; particles.forEach(p => { p.update(); p.draw(); }); }
             requestAnimationFrame(animateParticles);
         }
 
@@ -2976,13 +2986,13 @@
 
         rainbowSpeedSlider.addEventListener('input', (e) => {
             rainbowSpeed = parseFloat(e.target.value);
-            localStorage.setItem('gn_rainbowSpeed', rainbowSpeed);
+            localStorage.setItem('gn_particleRainbowSpeed', rainbowSpeed);
         });
 
         resetRainbowSpeed.addEventListener('click', () => {
-            rainbowSpeed = 0.5;
-            rainbowSpeedSlider.value = 0.5;
-            localStorage.setItem('gn_rainbowSpeed', 0.5);
+            rainbowSpeed = 50;
+            rainbowSpeedSlider.value = 50;
+            localStorage.setItem('gn_particleRainbowSpeed', 50);
         });
 
         const particleSizeSlider = document.getElementById('particleSizeSlider');
@@ -3074,7 +3084,7 @@
             updateRainbowSpeedVisibility();
         }
 
-        const savedRainbowSpeed = localStorage.getItem('gn_rainbowSpeed');
+        const savedRainbowSpeed = localStorage.getItem('gn_particleRainbowSpeed');
         if (savedRainbowSpeed !== null) {
             rainbowSpeed = parseFloat(savedRainbowSpeed);
             rainbowSpeedSlider.value = rainbowSpeed;
