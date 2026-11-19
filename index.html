@@ -1461,6 +1461,17 @@
                     <label for="darkModeToggle">Dark Mode</label>
                     <div class="toggle-switch active" id="darkModeToggle"></div>
                 </div>
+                <div class="settings-option">
+                    <label for="forceRainbowToggle" title="Makes every item that has Rainbow turned on use this one speed">Force Rainbow Speed</label>
+                    <div class="toggle-switch" id="forceRainbowToggle"></div>
+                </div>
+                <div class="settings-option" id="forceRainbowSpeedOption" style="display: none;">
+                    <label for="forceRainbowSpeedSlider">Forced Rainbow Speed</label>
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1.5; justify-content: flex-end;">
+                        <input type="range" id="forceRainbowSpeedSlider" min="10" max="200" step="1" value="50" style="width: 100px; cursor: pointer;" title="Forced Rainbow Speed">
+                        <button id="resetForceRainbowSpeed" style="background: var(--reset-color); color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.8em; white-space: nowrap;">Default</button>
+                    </div>
+                </div>
             </div>
 
             <div id="particlesTab" class="tab-content">
@@ -2181,6 +2192,54 @@
             isDragging = false;
         });
 
+        // Force Rainbow Speed (main setting): when on, every item with rainbow enabled uses this speed
+        let forceRainbowEnabled = localStorage.getItem('gn_forceRainbowEnabled') === 'true';
+        let forceRainbowSpeed = 50; // degrees of hue per second (same scale as other rainbow sliders: 10-200)
+        const savedForceRainbowSpeed = localStorage.getItem('gn_forceRainbowSpeed');
+        if (savedForceRainbowSpeed !== null && !isNaN(parseFloat(savedForceRainbowSpeed))) {
+            forceRainbowSpeed = parseFloat(savedForceRainbowSpeed);
+        }
+
+        // Returns the speed an item should actually use: the forced speed if enabled, otherwise its own
+        function getRainbowSpeed(ownSpeed) {
+            return forceRainbowEnabled ? forceRainbowSpeed : ownSpeed;
+        }
+
+        (function setupForceRainbow() {
+            const toggle = document.getElementById('forceRainbowToggle');
+            const speedOption = document.getElementById('forceRainbowSpeedOption');
+            const slider = document.getElementById('forceRainbowSpeedSlider');
+            const resetBtn = document.getElementById('resetForceRainbowSpeed');
+            const ownSliderIds = ['clockRainbowSpeedSlider', 'rainbowSpeedSlider', 'visualizerRainbowSpeed'];
+
+            function refresh() {
+                toggle.classList.toggle('active', forceRainbowEnabled);
+                speedOption.style.display = forceRainbowEnabled ? 'flex' : 'none';
+                slider.value = forceRainbowSpeed;
+                // Dim the individual sliders while forced (they keep their own values and stay adjustable)
+                ownSliderIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.opacity = forceRainbowEnabled ? '0.5' : '';
+                });
+            }
+
+            toggle.addEventListener('click', () => {
+                forceRainbowEnabled = !forceRainbowEnabled;
+                localStorage.setItem('gn_forceRainbowEnabled', forceRainbowEnabled);
+                refresh();
+            });
+            slider.addEventListener('input', () => {
+                forceRainbowSpeed = parseFloat(slider.value);
+                localStorage.setItem('gn_forceRainbowSpeed', forceRainbowSpeed);
+            });
+            resetBtn.addEventListener('click', () => {
+                forceRainbowSpeed = 50;
+                slider.value = 50;
+                localStorage.setItem('gn_forceRainbowSpeed', 50);
+            });
+            refresh();
+        })();
+
         // Settings Overlay Functionality
         const settingsBtn = document.getElementById('settingsBtn');
         const settingsOverlay = document.getElementById('settingsOverlay');
@@ -2256,7 +2315,7 @@
             now = now || performance.now();
             const dt = clockRainbowLastTime ? Math.min((now - clockRainbowLastTime) / 1000, 0.1) : 0;
             clockRainbowLastTime = now;
-            clockRainbowHue = (clockRainbowHue + clockRainbowSpeed * dt) % 360;
+            clockRainbowHue = (clockRainbowHue + getRainbowSpeed(clockRainbowSpeed) * dt) % 360;
             clock.style.color = `hsl(${clockRainbowHue}, 100%, 50%)`;
             clockRainbowInterval = requestAnimationFrame(updateClockRainbow);
         }
@@ -2899,7 +2958,7 @@
             const nowT = performance.now();
             const rbDt = rainbowLastTime ? Math.min((nowT - rainbowLastTime) / 1000, 0.1) : 0;
             rainbowLastTime = nowT;
-            if (particlesEnabled) { rainbowHue = (rainbowHue + rainbowSpeed * rbDt) % 360; particles.forEach(p => { p.update(); p.draw(); }); }
+            if (particlesEnabled) { rainbowHue = (rainbowHue + getRainbowSpeed(rainbowSpeed) * rbDt) % 360; particles.forEach(p => { p.update(); p.draw(); }); }
             requestAnimationFrame(animateParticles);
         }
 
@@ -5037,7 +5096,7 @@ playPauseBtn.addEventListener('click', () => {
             const x = i * (barWidth + gap);
 
             if (visualizerRainbowEnabled) {
-                const hue = (time * visualizerRainbowSpeed + (i * (360 / barCount))) % 360;
+                const hue = (time * getRainbowSpeed(visualizerRainbowSpeed) + (i * (360 / barCount))) % 360;
                 const color = `hsla(${hue}, 100%, 50%, ${opacity})`;
                 ctx.fillStyle = color;
                 ctx.shadowColor = color;
