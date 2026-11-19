@@ -4237,13 +4237,31 @@
             }
         ];
 
+        // Emulator games (run with EmulatorJS: https://emulatorjs.org)
+        // romUrl is relative to index.html, so keep the .bin file in the same folder (or change the path here)
+        const emulatorGamesList = [
+            {
+                title: "Sonic the Hedgehog",
+                type: "emulator",
+                core: "segaMD",
+                romUrl: "sonic1rev1.bin",
+                credits: "<p>Sonic the Hedgehog (Rev 1) by SEGA</p><p>Emulated with <a href=\"https://emulatorjs.org\" target=\"_blank\" rel=\"noopener\" style=\"color: var(--accent-color);\">EmulatorJS</a></p>",
+                controls: `<ul class="controls-list">
+                    <li>Arrow keys to move</li>
+                    <li>Hold Down while running to roll</li>
+                    <li>Press a jump button to jump</li>
+                    <li>Use the emulator's menu bar (Control Settings) to see or change the key bindings</li>
+                </ul>`
+            }
+        ];
+
         let currentGameIndex = 0;
         let activeGamesList = twGamesList;
 
         const gameListDropdown = document.getElementById('gameListDropdown');
         gameListDropdown.addEventListener('change', () => {
             if (gameListDropdown.value === 'emulators') {
-                activeGamesList = [];
+                activeGamesList = emulatorGamesList;
             } else {
                 activeGamesList = gameListDropdown.value === 'javascript' ? jsGamesList : twGamesList;
             }
@@ -4259,22 +4277,29 @@
         });
 
         function updateGame() {
-            if (gameListDropdown.value === 'emulators') {
-                gameTitle.textContent = '';
-                gameControlsContent.innerHTML = '';
-                gameCreditsContent.innerHTML = '';
-                gameIframe.removeAttribute('src');
-                gameIframe.removeAttribute('srcdoc');
-                gameIframe.style.display = 'none';
-                gameFullscreenBtn.style.display = 'none';
-                return;
-            }
             gameIframe.style.display = '';
             const game = activeGamesList[currentGameIndex];
             gameTitle.textContent = game.title;
             gameControlsContent.innerHTML = game.controls;
             gameCreditsContent.innerHTML = game.credits;
-            if (activeGamesList === jsGamesList) {
+            if (game.type === 'emulator') {
+                // Absolute URL needed because srcdoc pages have no base URL of their own
+                const romAbsUrl = new URL(game.romUrl, document.baseURI).href;
+                gameIframe.removeAttribute('src');
+                gameIframe.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style></head><body>'
+                    + '<div id="game"></div>'
+                    + '<script>'
+                    + 'EJS_player="#game";'
+                    + 'EJS_core=' + JSON.stringify(game.core) + ';'
+                    + 'EJS_gameUrl=' + JSON.stringify(romAbsUrl) + ';'
+                    + 'EJS_gameName=' + JSON.stringify(game.title) + ';'
+                    + 'EJS_pathtodata="https://cdn.emulatorjs.org/stable/data/";'
+                    + 'EJS_startOnLoaded=true;'
+                    + '<\/script>'
+                    + '<script src="https://cdn.emulatorjs.org/stable/data/loader.js"><\/script>'
+                    + '</body></html>';
+                gameFullscreenBtn.style.display = 'inline-block';
+            } else if (activeGamesList === jsGamesList) {
                 gameIframe.removeAttribute('src');
                 gameIframe.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script src="' + game.url + '"><\/script></body></html>';
                 gameFullscreenBtn.style.display = 'inline-block';
