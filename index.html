@@ -1665,9 +1665,14 @@
                 </div>
                 <div class="settings-option">
                     <label>Visualizer Colors</label>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
                         <input type="color" id="visualizerColorPickerBottom" title="Bottom Color" value="#ffffff" style="width: 35px; height: 30px; padding: 0; border: none; background: none; cursor: pointer;">
+                        <input type="color" id="visualizerColorPickerMiddle" title="Middle Color" value="#aed6f1" style="display: none; width: 35px; height: 30px; padding: 0; border: none; background: none; cursor: pointer;">
                         <input type="color" id="visualizerColorPickerTop" title="Top Color" value="#5dade2" style="width: 35px; height: 30px; padding: 0; border: none; background: none; cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 5px; margin-left: 5px;">
+                            <input type="checkbox" id="visualizerMiddleCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="visualizerMiddleCheckbox" style="font-size: 0.9em; cursor: pointer;">Middle</label>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 5px; margin-left: 5px;">
                             <input type="checkbox" id="visualizerRainbowCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
                             <label for="visualizerRainbowCheckbox" style="font-size: 0.9em; cursor: pointer;">Rainbow</label>
@@ -4825,6 +4830,8 @@ let visualizerEnabled = true;
 let visualizerRainbowEnabled = false;
 let visualizerColorTop = '#5dade2';
 let visualizerColorBottom = '#ffffff';
+let visualizerColorMiddle = '#aed6f1';
+let visualizerMiddleEnabled = false;
 let visualizerPosition = 'bottom';
 let visualizerType = 'bars';
 let visualizerIntensity = 1.0;
@@ -4842,6 +4849,14 @@ if (savedVisualizerRainbow !== null) {
 const savedVisualizerColorTop = localStorage.getItem('gn_power_visualizer_color_top');
 if (savedVisualizerColorTop !== null) {
     visualizerColorTop = savedVisualizerColorTop;
+}
+const savedVisualizerColorMiddle = localStorage.getItem('gn_power_visualizer_color_middle');
+if (savedVisualizerColorMiddle !== null) {
+    visualizerColorMiddle = savedVisualizerColorMiddle;
+}
+const savedVisualizerMiddleEnabled = localStorage.getItem('gn_power_visualizer_middle_enabled');
+if (savedVisualizerMiddleEnabled !== null) {
+    visualizerMiddleEnabled = savedVisualizerMiddleEnabled === 'true';
 }
 const savedVisualizerColorBottom = localStorage.getItem('gn_power_visualizer_color_bottom');
 if (savedVisualizerColorBottom !== null) {
@@ -4874,6 +4889,8 @@ setTimeout(() => {
     const resetIntensityBtn = document.getElementById('resetIntensityBtn');
     const colorPickerTop = document.getElementById('visualizerColorPickerTop');
     const colorPickerBottom = document.getElementById('visualizerColorPickerBottom');
+    const colorPickerMiddle = document.getElementById('visualizerColorPickerMiddle');
+    const middleCheckbox = document.getElementById('visualizerMiddleCheckbox');
     const typeSelect = document.getElementById('visualizerType');
     const positionSelect = document.getElementById('visualizerPosition');
     const positionOption = document.getElementById('visualizerPositionOption');
@@ -4938,6 +4955,24 @@ setTimeout(() => {
         colorPickerTop.addEventListener('input', () => {
             visualizerColorTop = colorPickerTop.value;
             localStorage.setItem('gn_power_visualizer_color_top', visualizerColorTop);
+        });
+    }
+
+    if (colorPickerMiddle) {
+        colorPickerMiddle.value = visualizerColorMiddle;
+        colorPickerMiddle.style.display = visualizerMiddleEnabled ? '' : 'none';
+        colorPickerMiddle.addEventListener('input', () => {
+            visualizerColorMiddle = colorPickerMiddle.value;
+            localStorage.setItem('gn_power_visualizer_color_middle', visualizerColorMiddle);
+        });
+    }
+
+    if (middleCheckbox) {
+        middleCheckbox.checked = visualizerMiddleEnabled;
+        middleCheckbox.addEventListener('change', () => {
+            visualizerMiddleEnabled = middleCheckbox.checked;
+            if (colorPickerMiddle) colorPickerMiddle.style.display = visualizerMiddleEnabled ? '' : 'none';
+            localStorage.setItem('gn_power_visualizer_middle_enabled', visualizerMiddleEnabled);
         });
     }
 
@@ -5104,27 +5139,34 @@ playPauseBtn.addEventListener('click', () => {
                 if (visualizerType === 'circle') {
                     gradient = ctx.createLinearGradient(0, 0, barHeight, 0);
                     gradient.addColorStop(0, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.5, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 } else if (visualizerType === 'waveform') {
                     gradient = ctx.createLinearGradient(0, H/2 - barHeight/2, 0, H/2 + barHeight/2);
                     gradient.addColorStop(0, visualizerColorTop);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.25, visualizerColorMiddle);
                     gradient.addColorStop(0.5, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.75, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 } else if (visualizerPosition === 'bottom') {
                     gradient = ctx.createLinearGradient(0, H, 0, H - barHeight);
                     gradient.addColorStop(0, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.5, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 } else if (visualizerPosition === 'top') {
                     gradient = ctx.createLinearGradient(0, 0, 0, barHeight);
                     gradient.addColorStop(0, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.5, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 } else if (visualizerPosition === 'left') {
                     gradient = ctx.createLinearGradient(0, 0, barHeight, 0);
                     gradient.addColorStop(0, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.5, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 } else if (visualizerPosition === 'right') {
                     gradient = ctx.createLinearGradient(W, 0, W - barHeight, 0);
                     gradient.addColorStop(0, visualizerColorBottom);
+                    if (visualizerMiddleEnabled) gradient.addColorStop(0.5, visualizerColorMiddle);
                     gradient.addColorStop(1, visualizerColorTop);
                 }
                 ctx.fillStyle = gradient;
